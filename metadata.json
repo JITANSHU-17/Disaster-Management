@@ -1,0 +1,13 @@
+{
+  "name": "DisasterGuard - School Emergency System",
+  "description": "An interactive disaster preparedness and response education system for schools and colleges, featuring real-time alerts, safety modules, and emergency planning.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "Gemini AI Quizzes",
+    "Real-time Alert Simulation",
+    "Emergency Plan Management",
+    "Preparedness Reporting"
+  ]
+}

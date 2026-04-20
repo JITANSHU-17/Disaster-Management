@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function isValidUser(data) {
+      return data.id is string && 
+             data.name is string && 
+             data.name.size() > 0 &&
+             data.email is string && 
+             data.role in ['ADMIN', 'TEACHER', 'STUDENT'] &&
+             data.institution is string;
+    }
+
+    // Security Rules for User Profiles
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && (resource == null || resource.data.id == request.auth.uid);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Legacy/Old secrets path - kept for backwards compatibility if needed, 
+    // but primary auth is now standard.
+    match /userSecrets/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}
